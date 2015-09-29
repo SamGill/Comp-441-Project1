@@ -67,6 +67,7 @@ const float PLAYER_SPEED = 250.0f;            // pixels per second
 const float	BULLET_SPEED = 750.0f;
 const int   HEART_NUMBER = 5;
 const int   GOLD_NUMBER  = 3;
+const int	BANDIT_SPEED = 60;
 
 const int PIXEL_SPACE = 10;
 

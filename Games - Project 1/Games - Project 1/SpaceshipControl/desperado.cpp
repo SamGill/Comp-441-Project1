@@ -7,6 +7,12 @@
 
 #include "desperado.h"
 #include <string>
+#include <time.h>
+#include <stdlib.h>
+
+//Just for testing
+int banditCounter = 0;
+
 //=============================================================================
 // Constructor
 //=============================================================================
@@ -110,6 +116,11 @@ void Desperado::initialize(HWND hwnd)
 		golds[i].setX(GAME_WIDTH - ((golds[i].getWidth() + PIXEL_SPACE) * (i + 1)));
 	}
 
+	//Bandit
+	if (!bandit.initialize(graphics,0,0,0, &banditTexture))
+		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing bandit"));
+
+
 	// background 
 	if (!background.initialize(graphics,GAME_WIDTH,GAME_HEIGHT,0, &backgroundTexture))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing background"));
@@ -127,6 +138,13 @@ void Desperado::initialize(HWND hwnd)
 //=============================================================================
 void Desperado::update()
 {
+	srand(time(NULL));
+
+	banditCounter++;
+
+	int placement;
+	placement = rand() % GAME_WIDTH;
+
     if(input->isKeyDown(VK_RIGHT))            // if move right
     {
         player.setX(player.getX() + frameTime * PLAYER_SPEED);
@@ -164,6 +182,16 @@ void Desperado::update()
 	if (playerBullet.getY() < 0)
 		playerBullet.setVisible(false);
 
+	if(banditCounter % 1000 && !bandit.getVisible())
+	{
+		bandit.setVisible(true);
+		bandit.setY(-100);
+		bandit.setX(placement);
+	}
+
+	if(bandit.getVisible())
+		bandit.setY(bandit.getY() + frameTime * BANDIT_SPEED);
+
 	playerBullet.update(frameTime);
     player.update(frameTime);
 }
@@ -191,6 +219,7 @@ void Desperado::render()
     
 	cactus.draw();
 	player.draw();
+	bandit.draw();
 
 	
 	playerBullet.draw();
