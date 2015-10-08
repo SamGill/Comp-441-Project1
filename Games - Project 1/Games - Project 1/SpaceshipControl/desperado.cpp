@@ -97,7 +97,7 @@ void Desperado::initialize(HWND hwnd)
 	cactus.setX(GAME_WIDTH/4);
 	cactus.setY(GAME_HEIGHT/4);
 	
-	if (!playerBullet.initialize(graphics,0,0,0, &bulletTexture))
+	if (!playerBullet.initialize(this,0,0,0, &bulletTexture))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing bullet"));
 	playerBullet.setVisible(false);
 
@@ -117,7 +117,7 @@ void Desperado::initialize(HWND hwnd)
 	}
 
 	//Bandit
-	if (!bandit.initialize(graphics,0,0,0, &banditTexture))
+	if (!bandit.initialize(this,banditNS::WIDTH,banditNS::HEIGHT,0, &banditTexture))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing bandit"));
 
 
@@ -125,7 +125,7 @@ void Desperado::initialize(HWND hwnd)
 	if (!background.initialize(graphics,GAME_WIDTH,GAME_HEIGHT,0, &backgroundTexture))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing background"));
 
-	if (!player.initialize(graphics, 0,0,0,&playerTexture))
+	if (!player.initialize(this, 0,0,0,&playerTexture))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing player"));
 	player.setY(GAME_HEIGHT - player.getHeight());
 	player.setX(GAME_WIDTH/2);
@@ -190,7 +190,7 @@ void Desperado::update()
 	}
 
 	if(bandit.getVisible())
-		bandit.setY(bandit.getY() + frameTime * BANDIT_SPEED);
+		bandit.setY(bandit.getY() + frameTime * banditNS::SPEED);
 
 	playerBullet.update(frameTime);
     player.update(frameTime);
@@ -206,7 +206,15 @@ void Desperado::ai()
 // Handle collisions
 //=============================================================================
 void Desperado::collisions()
-{}
+{
+	VECTOR2 collisionVector;
+
+	if (bandit.collidesWith(playerBullet,collisionVector))
+	{
+		bandit.setVisible(false);
+	}
+
+}
 
 //=============================================================================
 // Render game items
@@ -271,8 +279,6 @@ void Desperado::resetAll()
 	goldTexture.onResetDevice();
 	heartTexture.onResetDevice();
 	playerTexture.onResetDevice();
-
-
 
     Game::resetAll();
     return;

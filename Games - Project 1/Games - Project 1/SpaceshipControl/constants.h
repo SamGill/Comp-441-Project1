@@ -91,4 +91,7 @@ const UCHAR SHIP_RIGHT_KEY   = VK_RIGHT;    // right arrow
 const UCHAR SHIP_UP_KEY      = VK_UP;       // up arrow
 const UCHAR SHIP_DOWN_KEY    = VK_DOWN;     // down arrow
 
+enum WEAPON {BULLET, BANDIT};
+
+
 #endif

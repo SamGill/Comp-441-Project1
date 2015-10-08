@@ -10,6 +10,9 @@
 #include "game.h"
 #include "textureManager.h"
 #include "image.h"
+#include "bandit.h"
+#include "bullet.h"
+#include "player.h"
 
 //=============================================================================
 // This class is the core of the game
@@ -28,10 +31,10 @@ private:
 	TextureManager playerTexture;
 
 	Image cactus;					// cactus image
-	Image bandit;
+	Bandit bandit;
 	Image background;
-	Image playerBullet;
-	Image player;
+	Bullet playerBullet;
+	Player player;
 
 	Image hearts[5];
 	Image golds[3];
