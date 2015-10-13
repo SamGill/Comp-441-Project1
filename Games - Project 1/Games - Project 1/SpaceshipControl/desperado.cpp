@@ -35,6 +35,8 @@ void Desperado::initialize(HWND hwnd)
 {
     Game::initialize(hwnd); // throws GameError
 
+	srand(time(NULL));
+
 #pragma region Built_in_textures 
     // nebula texture
     if (!nebulaTexture.initialize(graphics,NEBULA_IMAGE))
@@ -120,6 +122,13 @@ void Desperado::initialize(HWND hwnd)
 	if (!bandit.initialize(this,banditNS::WIDTH,banditNS::HEIGHT,0, &banditTexture))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing bandit"));
 
+	//Many bandits
+	for (int i = 0; i < 5; i++) 
+	{
+		if (!manyBandits[i].initialize(this,0,0,0, &banditTexture))
+			throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing a heart"));
+		manyBandits[i].setX((manyBandits[i].getWidth() + PIXEL_SPACE)* i);
+	}
 
 	// background 
 	if (!background.initialize(graphics,GAME_WIDTH,GAME_HEIGHT,0, &backgroundTexture))
@@ -138,8 +147,6 @@ void Desperado::initialize(HWND hwnd)
 //=============================================================================
 void Desperado::update()
 {
-	srand(time(NULL));
-
 	banditCounter++;
 
 	int placement;
@@ -192,6 +199,24 @@ void Desperado::update()
 	if(bandit.getVisible())
 		bandit.setY(bandit.getY() + frameTime * banditNS::SPEED);
 
+
+	for (int i = 0; i < 5; i++)
+	{
+		if(banditCounter % 1000 && !manyBandits[i].getVisible())
+		{
+			manyBandits[i].setVisible(true);
+			manyBandits[i].setY(-100);
+			manyBandits[i].setX(placement);
+		}
+	}
+
+	//Move all the bandits test
+	for(int i = 0; i < 5; i++)
+	{
+		if(manyBandits[i].getVisible())
+			manyBandits[i].setY(manyBandits[i].getY() + frameTime * banditNS::SPEED);
+
+	}
 	playerBullet.update(frameTime);
     player.update(frameTime);
 }
@@ -212,7 +237,19 @@ void Desperado::collisions()
 	if (bandit.collidesWith(playerBullet,collisionVector))
 	{
 		bandit.setVisible(false);
+		playerBullet.setVisible(false);
 	}
+
+
+	for (int i = 0; i < 5; i++)
+	{
+		if (manyBandits[i].collidesWith(playerBullet,collisionVector))
+		{
+			manyBandits[i].setVisible(false);
+			playerBullet.setVisible(false);
+		}
+	}
+
 
 }
 
@@ -227,10 +264,15 @@ void Desperado::render()
     
 	cactus.draw();
 	player.draw();
-	bandit.draw();
+	//bandit.draw();
 
+	for (int i = 0; i < 5; i++)
+	{
+		manyBandits[i].draw();
+	}
 	
 	playerBullet.draw();
+
 	for (int i = 0; i < HEART_NUMBER; i++)
 		hearts[i].draw();
 

@@ -32,6 +32,7 @@ private:
 
 	Image cactus;					// cactus image
 	Bandit bandit;
+	Bandit manyBandits[5];
 	Image background;
 	Bullet playerBullet;
 	Player player;
