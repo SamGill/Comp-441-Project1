@@ -7,11 +7,16 @@
 
 #include "desperado.h"
 #include <string>
+#include <sstream>
 #include <time.h>
 #include <stdlib.h>
 
 //Just for testing
-int banditCounter = 0;
+int banditCounter = 10;
+int banditPlaceCount = 0;
+int score = 0;
+int waveNum = 1;
+int delay = 0;
 
 //=============================================================================
 // Constructor
@@ -34,6 +39,25 @@ Desperado::~Desperado()
 void Desperado::initialize(HWND hwnd)
 {
     Game::initialize(hwnd); // throws GameError
+
+	srand(time(NULL));
+
+	scoreFont = new TextDX();
+	wave = new TextDX();
+	victory = new TextDX();
+
+
+	//Initialize the score text
+	if(scoreFont->initialize(graphics, 32, true, false, "Arial") == false)
+        throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing output font"));
+	if(wave->initialize(graphics, 32, true, false, "Rockwell Extra Bold") == false)
+        throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing output font"));
+	if(victory->initialize(graphics, 50, true, false, "Broadway") == false)
+        throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing output font"));
+
+	scoreFont->setFontColor(graphicsNS::RED);
+	wave->setFontColor(graphicsNS::BLACK);
+	victory->setFontColor(graphicsNS::YELLOW);
 
 #pragma region Built_in_textures 
     // nebula texture
@@ -120,6 +144,13 @@ void Desperado::initialize(HWND hwnd)
 	if (!bandit.initialize(this,banditNS::WIDTH,banditNS::HEIGHT,0, &banditTexture))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing bandit"));
 
+	//Many bandits
+	for (int i = 0; i < 5; i++) 
+	{
+		if (!manyBandits[i].initialize(this,0,0,0, &banditTexture))
+			throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing a heart"));
+		manyBandits[i].setX((manyBandits[i].getWidth() + PIXEL_SPACE)* i);
+	}
 
 	// background 
 	if (!background.initialize(graphics,GAME_WIDTH,GAME_HEIGHT,0, &backgroundTexture))
@@ -138,12 +169,44 @@ void Desperado::initialize(HWND hwnd)
 //=============================================================================
 void Desperado::update()
 {
-	srand(time(NULL));
-
-	banditCounter++;
 
 	int placement;
-	placement = rand() % GAME_WIDTH;
+	placement = rand() % (GAME_WIDTH - bandit.getWidth());
+
+	banditPlaceCount++;
+
+	//Checks the status of the wave
+	if(banditCounter <= 0 && !manyBandits[0].getVisible() && !manyBandits[1].getVisible()
+		&& !manyBandits[2].getVisible() && !manyBandits[3].getVisible() && !manyBandits[4].getVisible())
+	{
+		delay++;
+		if(delay == waveDelay && waveNum < 5)
+		{
+			waveNum++; //Moves to next wave
+			
+			//Checks which wave it is and sets bandit count accordingly
+			if(waveNum == 2)
+				banditCounter = 5;
+			else if(waveNum == 3)
+				banditCounter = 5;
+			else if(waveNum == 4)
+				banditCounter = 5;
+			else if(waveNum == 5)
+				banditCounter = 5;
+			delay = 0;
+
+			//Display bandits in a line again
+			for (int i = 0; i < 5; i++)
+			{
+				if(!manyBandits[i].getVisible())
+				{
+					manyBandits[i].setVisible(true);
+					manyBandits[i].setY(-100);
+					manyBandits[i].setX((i+1)*manyBandits[i].getWidth());
+				}
+			}
+		}
+	}
 
     if(input->isKeyDown(VK_RIGHT))            // if move right
     {
@@ -182,7 +245,7 @@ void Desperado::update()
 	if (playerBullet.getY() < 0)
 		playerBullet.setVisible(false);
 
-	if(banditCounter % 1000 && !bandit.getVisible())
+	/*if(banditCounter % 1000 && !bandit.getVisible())
 	{
 		bandit.setVisible(true);
 		bandit.setY(-100);
@@ -190,10 +253,47 @@ void Desperado::update()
 	}
 
 	if(bandit.getVisible())
-		bandit.setY(bandit.getY() + frameTime * banditNS::SPEED);
+		bandit.setY(bandit.getY() + frameTime * banditNS::SPEED);*/
 
+
+	if(banditCounter > 0)
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			if(banditPlaceCount % 1000 && !manyBandits[i].getVisible())
+			{
+				manyBandits[i].setVisible(true);
+				manyBandits[i].setY(-100);
+				manyBandits[i].setX(placement);
+			}
+		}
+	}
+
+	//Move all the bandits
+	for(int i = 0; i < 5; i++)
+	{
+		if(manyBandits[i].getVisible())
+			manyBandits[i].setY(manyBandits[i].getY() + frameTime * banditNS::SPEED);
+
+	}
 	playerBullet.update(frameTime);
     player.update(frameTime);
+	
+	//Updates bandits
+	/*for (int i = 0; i < 5; i++)
+	{
+		manyBandits[i].update(frameTime);
+	}*/
+
+	//Tests to see if bandit has exited bottom of screen
+	for (int i = 0; i < 5; i++)
+	{
+		if (manyBandits[i].getVisible() && manyBandits[i].getY() > GAME_HEIGHT)
+		{
+			manyBandits[i].setVisible(false);
+			banditCounter--;
+		}
+	}
 }
 
 //=============================================================================
@@ -212,6 +312,19 @@ void Desperado::collisions()
 	if (bandit.collidesWith(playerBullet,collisionVector))
 	{
 		bandit.setVisible(false);
+		playerBullet.setVisible(false);
+	}
+
+
+	for (int i = 0; i < 5; i++)
+	{
+		if (manyBandits[i].collidesWith(playerBullet,collisionVector) && manyBandits[i].getVisible() && playerBullet.getVisible())
+		{
+			manyBandits[i].setVisible(false);
+			playerBullet.setVisible(false);
+			banditCounter--;
+			score++;
+		}
 	}
 
 }
@@ -221,21 +334,49 @@ void Desperado::collisions()
 //=============================================================================
 void Desperado::render()
 {
+	//Score display
+	std::stringstream scoreDisplay;
+	scoreDisplay << "Score: ";
+	scoreDisplay << score;
+
+	//Wave display
+	std::stringstream waveDisplay;
+	waveDisplay << "Wave: ";
+	waveDisplay << waveNum;
+
+	//Victory text
+	std::stringstream victoryDisplay;
+	victoryDisplay << "VICTORY!!!";
+
     graphics->spriteBegin();                // begin drawing sprites
 
 	background.draw();
     
 	cactus.draw();
 	player.draw();
-	bandit.draw();
+	//bandit.draw();
 
+	for (int i = 0; i < 5; i++)
+	{
+		manyBandits[i].draw();
+	}
 	
 	playerBullet.draw();
+
 	for (int i = 0; i < HEART_NUMBER; i++)
 		hearts[i].draw();
 
 	for (int i = 0; i < GOLD_NUMBER; i++)
 		golds[i].draw();
+
+	scoreFont->print(scoreDisplay.str(), GAME_WIDTH - 150, 40); //Displays score
+	wave->print(waveDisplay.str(), GAME_WIDTH/2 - 30, 30);
+
+	if(waveNum == 5 && !manyBandits[0].getVisible() && !manyBandits[1].getVisible()
+		&& !manyBandits[2].getVisible() && !manyBandits[3].getVisible() && !manyBandits[4].getVisible())
+	{
+		victory->print(victoryDisplay.str(), GAME_WIDTH/2 - 50, GAME_HEIGHT/2 - 50);
+	}
 
     graphics->spriteEnd();                  // end drawing sprites
 }
