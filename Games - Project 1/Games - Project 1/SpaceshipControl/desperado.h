@@ -43,6 +43,8 @@ private:
 
 	TextDX *scoreFont; //Text used to display score
 	TextDX *wave; //Text used to display current wave
+	TextDX *victory; //Text displayed when player successfully completes game
+	TextDX *gameOver; //Text displayed when player dies
 	
 	// game items
 	TextureManager nebulaTexture;   // nebula texture

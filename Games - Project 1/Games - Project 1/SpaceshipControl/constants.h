@@ -69,6 +69,8 @@ const int   HEART_NUMBER = 5;
 const int   GOLD_NUMBER  = 3;
 const int	BANDIT_SPEED = 60;
 
+const int waveDelay = 200;  //Delay in time between waves
+
 const int PIXEL_SPACE = 10;
 
 
