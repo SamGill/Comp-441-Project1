@@ -70,6 +70,7 @@ const int   GOLD_NUMBER  = 3;
 const int	BANDIT_SPEED = 60;
 const int   MAX_BANDITS  = 5;
 
+const int waveDelay = 200;
 
 const int PIXEL_SPACE = 10;
 
@@ -92,5 +93,17 @@ const UCHAR ENTER_KEY    = VK_RETURN;       // Enter key
 
 enum WEAPON {BULLET, BANDIT};
 
+// audio files required by audio.cpp
+// WAVE_BANK must be location of .xwb file.
+const char WAVE_BANK[]  = "audio\\Win\\WavesExample1.xwb";
+// SOUND_BANK must be location of .xsb file.
+const char SOUND_BANK[] = "audio\\Win\\SoundsExample1.xsb";
+
+// audio cues
+const char BEEP1[] = "beep1";
+const char BEEP2[] = "beep2";
+const char BEEP3[] = "beep3";
+const char BEEP4[] = "beep4";
+const char HIT[]   = "hit";
 
 #endif
