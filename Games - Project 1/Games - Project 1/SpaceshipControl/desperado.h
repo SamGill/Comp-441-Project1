@@ -13,6 +13,7 @@
 #include "bandit.h"
 #include "bullet.h"
 #include "player.h"
+#include "textDX.h"
 
 //=============================================================================
 // This class is the core of the game
@@ -39,6 +40,9 @@ private:
 
 	Image hearts[5];
 	Image golds[3];
+
+	TextDX *scoreFont; //Text used to display score
+	TextDX *wave; //Text used to display current wave
 	
 	// game items
 	TextureManager nebulaTexture;   // nebula texture

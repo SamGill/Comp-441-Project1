@@ -7,11 +7,14 @@
 
 #include "desperado.h"
 #include <string>
+#include <sstream>
 #include <time.h>
 #include <stdlib.h>
 
 //Just for testing
 int banditCounter = 0;
+int score = 0;
+int waveNum = 1;
 
 //=============================================================================
 // Constructor
@@ -36,6 +39,18 @@ void Desperado::initialize(HWND hwnd)
     Game::initialize(hwnd); // throws GameError
 
 	srand(time(NULL));
+
+	scoreFont = new TextDX();
+	wave = new TextDX();
+
+	//Initialize the score text
+	if(scoreFont->initialize(graphics, 32, true, false, "Arial") == false)
+        throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing output font"));
+	if(wave->initialize(graphics, 32, true, false, "Arial") == false)
+        throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing output font"));
+
+	scoreFont->setFontColor(graphicsNS::RED);
+	wave->setFontColor(graphicsNS::BLACK);
 
 #pragma region Built_in_textures 
     // nebula texture
@@ -147,7 +162,6 @@ void Desperado::initialize(HWND hwnd)
 //=============================================================================
 void Desperado::update()
 {
-	banditCounter++;
 
 	int placement;
 	placement = rand() % GAME_WIDTH;
@@ -189,7 +203,7 @@ void Desperado::update()
 	if (playerBullet.getY() < 0)
 		playerBullet.setVisible(false);
 
-	if(banditCounter % 1000 && !bandit.getVisible())
+	/*if(banditCounter % 1000 && !bandit.getVisible())
 	{
 		bandit.setVisible(true);
 		bandit.setY(-100);
@@ -197,7 +211,7 @@ void Desperado::update()
 	}
 
 	if(bandit.getVisible())
-		bandit.setY(bandit.getY() + frameTime * banditNS::SPEED);
+		bandit.setY(bandit.getY() + frameTime * banditNS::SPEED);*/
 
 
 	for (int i = 0; i < 5; i++)
@@ -245,6 +259,7 @@ void Desperado::collisions()
 	{
 		if (manyBandits[i].collidesWith(playerBullet,collisionVector))
 		{
+			score++;
 			manyBandits[i].setVisible(false);
 			playerBullet.setVisible(false);
 		}
@@ -258,6 +273,16 @@ void Desperado::collisions()
 //=============================================================================
 void Desperado::render()
 {
+	//Score display
+	std::stringstream scoreDisplay;
+	scoreDisplay << "Score: ";
+	scoreDisplay << score;
+
+	//Wave display
+	std::stringstream waveDisplay;
+	waveDisplay << "Wave: ";
+	waveDisplay << waveNum;
+
     graphics->spriteBegin();                // begin drawing sprites
 
 	background.draw();
@@ -278,6 +303,9 @@ void Desperado::render()
 
 	for (int i = 0; i < GOLD_NUMBER; i++)
 		golds[i].draw();
+
+	scoreFont->print(scoreDisplay.str(), GAME_WIDTH - 150, 40); //Displays score
+	wave->print(waveDisplay.str(), GAME_WIDTH/2 - 30, 30);
 
     graphics->spriteEnd();                  // end drawing sprites
 }

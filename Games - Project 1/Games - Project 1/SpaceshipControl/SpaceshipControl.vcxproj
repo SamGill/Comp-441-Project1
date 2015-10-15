@@ -87,6 +87,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="audio.cpp" />
     <ClCompile Include="bandit.cpp" />
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="entity.cpp" />
@@ -96,10 +97,12 @@
     <ClCompile Include="input.cpp" />
     <ClCompile Include="desperado.cpp" />
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="textDX.cpp" />
     <ClCompile Include="textureManager.cpp" />
     <ClCompile Include="winmain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="audio.h" />
     <ClInclude Include="bandit.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="constants.h" />
@@ -111,6 +114,7 @@
     <ClInclude Include="input.h" />
     <ClInclude Include="desperado.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="textDX.h" />
     <ClInclude Include="textureManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
