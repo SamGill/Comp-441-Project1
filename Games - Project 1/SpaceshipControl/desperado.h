@@ -14,6 +14,7 @@
 #include "bullet.h"
 #include "player.h"
 #include "textDX.h"
+#include "audio.h";
 
 //=============================================================================
 // This class is the core of the game

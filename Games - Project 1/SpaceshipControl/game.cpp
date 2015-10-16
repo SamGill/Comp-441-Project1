@@ -4,7 +4,6 @@
 // Chapter 5 game.cpp v1.0
 
 #include "game.h"
-#include "audio.h"
 
 // The primary class should inherit from Game class
 
@@ -17,6 +16,7 @@ Game::Game()
     // additional initialization is handled in later call to input->initialize()
     paused = false;             // game is not paused
     graphics = NULL;
+	audio = NULL;
     initialized = false;
 }
 
@@ -250,5 +250,6 @@ void Game::deleteAll()
     releaseAll();               // call onLostDevice() for every graphics item
     SAFE_DELETE(graphics);
     SAFE_DELETE(input);
+	SAFE_DELETE(audio);
     initialized = false;
 }

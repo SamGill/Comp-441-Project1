@@ -79,6 +79,20 @@ void Desperado::initialize(HWND hwnd)
 	wave = new TextDX();
 	victory = new TextDX();
 	gameOver = new TextDX();
+	audio = new Audio();
+	 // init sound system
+    audio = new Audio();
+
+    if (*WAVE_BANK != '\0' && *SOUND_BANK != '\0')  // if sound files defined
+    {
+        if( FAILED( hr = audio->initialize() ) )
+        {
+            if( hr == HRESULT_FROM_WIN32( ERROR_FILE_NOT_FOUND ) )
+                throw(GameError(gameErrorNS::FATAL_ERROR, "Failed to initialize sound system because media file not found."));
+            else
+                throw(GameError(gameErrorNS::FATAL_ERROR, "Failed to initialize sound system."));
+        }
+    }
 
 	//Initialize the game text
 	if(scoreFont->initialize(graphics, 32, true, false, "Arial") == false)
@@ -249,6 +263,9 @@ void Desperado::update()
 		playerBullet.setVisible(true);
 		playerBullet.setX(player.getX() + 21);
 		playerBullet.setY(player.getY());
+
+		//Play gun sounds
+		audio->playCue(GUNSHOT);
 	}
 
 	//If "X" key is pressed, right gun shoots
@@ -257,6 +274,8 @@ void Desperado::update()
 		playerBullet.setVisible(true);
 		playerBullet.setX(player.getX() + 99);
 		playerBullet.setY(player.getY());
+		//Play gun sounds
+		audio->playCue(GUNSHOT);
 	}
 
 	if (banditCounter > 0)
@@ -330,6 +349,7 @@ void Desperado::collisions()
 	//Checks for game over condition
 	if(gameOverCond)
 	{
+		audio->playCue(FAILURE);
 		Sleep(5000);
 		exitGame();
 	}
@@ -337,6 +357,8 @@ void Desperado::collisions()
 	//Checks for victory condition
 	if(victoryCond)
 	{
+		audio->playCue(VICTORY);
+		victoryCond = false;
 		Sleep(1000);
 		if(input->anyKeyPressed())
 			exitGame();
