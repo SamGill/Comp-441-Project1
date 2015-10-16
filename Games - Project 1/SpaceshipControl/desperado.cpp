@@ -19,6 +19,8 @@ int waveNum = 1;
 int delay = 0;
 bool gameOverCond = false;
 bool victoryCond = false;
+bool outOfHearts = false;
+bool outOfGold = false;
 
 void subtractHeart(Image hearts[])
 {
@@ -27,6 +29,8 @@ void subtractHeart(Image hearts[])
 		if (hearts[i].getVisible())
 		{
 			hearts[i].setVisible(false);
+			if (i == 0)
+				outOfHearts = true;
 			return;
 		}
 	}
@@ -39,6 +43,8 @@ void subtractGold(Image gold[])
 		if (gold[i].getVisible())
 		{
 			gold[i].setVisible(false);
+			if (i == 0)
+				outOfGold = true;
 			return;
 		}
 	}
@@ -75,7 +81,6 @@ void Desperado::initialize(HWND hwnd)
 	wave = new TextDX();
 	victory = new TextDX();
 	gameOver = new TextDX();
-
 
 	//Initialize the game text
 	if(scoreFont->initialize(graphics, 32, true, false, "Arial") == false)
@@ -204,6 +209,25 @@ void Desperado::initialize(HWND hwnd)
 //=============================================================================
 void Desperado::update()
 {
+	if (outOfGold || outOfHearts)
+	{
+		for(int i = 0; i < MAX_BANDITS; i++)
+		{
+
+			manyBandits[i].chance_to_shoot();
+			//manyBandits[i].setY(manyBandits[i].getY() + frameTime * banditNS::SPEED);
+			manyBandits[i].update(frameTime);
+
+			if (manyBandits[i].getY() > GAME_HEIGHT && manyBandits[i].getVisible())
+			{
+				manyBandits[i].setVisible(false);
+				banditCounter--;
+			}
+
+		}
+		return;
+	}
+
 	banditPlaceCount++;
 
 	int placement;
@@ -272,22 +296,6 @@ void Desperado::update()
 		playerBullet.setX(player.getX() + 99);
 		playerBullet.setY(player.getY());
 	}
-
-	/*if (playerBullet.getVisible()) 
-	playerBullet.setY(playerBullet.getY() - frameTime * BULLET_SPEED);*/
-
-	/*if (playerBullet.getY() < 0)
-	playerBullet.setVisible(false);*/
-
-	/*if(banditCounter % 1000 && !bandit.getVisible())
-	{
-	bandit.setVisible(true);
-	bandit.setY(-100);
-	bandit.setX(placement);
-	}*/
-
-	/*if(bandit.getVisible())
-	bandit.setY(bandit.getY() + frameTime * banditNS::SPEED);*/
 
 	if (banditCounter > 0)
 	{
@@ -395,14 +403,19 @@ void Desperado::render()
 
 	//Game over text
 	std::stringstream gameOverDisplay;
-	gameOverDisplay << "GAME OVER";
+
+	if (outOfGold)
+		gameOverDisplay << "All your gold was stolen!";
+	else if (outOfHearts)
+		gameOverDisplay << "You died!";
+
+	gameOverDisplay << "\n\tGAME OVER";
 
 	graphics->spriteBegin();                // begin drawing sprites
 
 	background.draw();
 
 	cactus.draw();
-	player.draw();
 	//bandit.draw();
 
 	for (int i = 0; i < MAX_BANDITS; i++)
@@ -428,12 +441,13 @@ void Desperado::render()
 		victoryCond = true;
 	}
 
-	//Game over condition
-	if(!hearts[0].getVisible())
+	if (outOfGold || outOfHearts)
 	{
-		gameOver->print(gameOverDisplay.str(), GAME_WIDTH/2 - 50, GAME_HEIGHT/2 - 50);
+		gameOver->print(gameOverDisplay.str(), GAME_WIDTH/2 - 100, GAME_HEIGHT/2 - 100);
 		gameOverCond = true;
 	}
+	else
+		player.draw();
 
 	graphics->spriteEnd();                  // end drawing sprites
 }
