@@ -75,8 +75,6 @@ void Desperado::initialize(HWND hwnd)
 
 	srand(time(NULL));
 
-	srand(time(NULL));
-
 	scoreFont = new TextDX();
 	wave = new TextDX();
 	victory = new TextDX();
@@ -97,20 +95,6 @@ void Desperado::initialize(HWND hwnd)
 	victory->setFontColor(graphicsNS::YELLOW);
 	gameOver->setFontColor(graphicsNS::RED);
 
-#pragma region Built_in_textures 
-	// nebula texture
-	if (!nebulaTexture.initialize(graphics,NEBULA_IMAGE))
-		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing nebula texture"));
-
-	// planet texture
-	if (!planetTexture.initialize(graphics,PLANET_IMAGE))
-		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing planet texture"));
-
-	// spaceship texture
-	if (!shipTexture.initialize(graphics,SHIP_IMAGE))
-		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing ship texture"));
-#pragma endregion 
-
 	if (!cactusTexture.initialize(graphics,CACTUS_IMAGE))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing cactus texture"));
 	if (!backgroundTexture.initialize(graphics, BACKGROUND_IMAGE))
@@ -130,28 +114,6 @@ void Desperado::initialize(HWND hwnd)
 
 	if (!banditTexture.initialize(graphics, BANDIT_IMAGE))
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing bandit texture"));
-
-#pragma region Built_in_initializations 
-	// nebula
-	if (!nebula.initialize(graphics,0,0,0,&nebulaTexture))
-		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing nebula"));
-
-	// planet
-	if (!planet.initialize(graphics,0,0,0,&planetTexture))
-		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing planet"));
-	// place planet in center of screen
-	planet.setX(GAME_WIDTH*0.5f  - planet.getWidth()*0.5f);
-	planet.setY(GAME_HEIGHT*0.5f - planet.getHeight()*0.5f);
-
-	// ship
-	if (!ship.initialize(graphics,SHIP_WIDTH, SHIP_HEIGHT, SHIP_COLS, &shipTexture))
-		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing ship"));
-	ship.setX(GAME_WIDTH/4);                    // start above and left of planet
-	ship.setY(GAME_HEIGHT/4);
-	ship.setFrames(SHIP_START_FRAME, SHIP_END_FRAME);   // animation frames
-	ship.setCurrentFrame(SHIP_START_FRAME);     // starting frame
-	ship.setFrameDelay(SHIP_ANIMATION_DELAY);
-#pragma endregion
 
 	// cactus
 	if (!cactus.initialize(graphics,0,0,0, &cactusTexture))
@@ -458,9 +420,6 @@ void Desperado::render()
 //=============================================================================
 void Desperado::releaseAll()
 {
-	shipTexture.onLostDevice();
-	planetTexture.onLostDevice();
-	nebulaTexture.onLostDevice();
 	cactusTexture.onLostDevice();
 
 	banditTexture.onLostDevice();
@@ -480,9 +439,6 @@ void Desperado::releaseAll()
 //=============================================================================
 void Desperado::resetAll()
 {
-	nebulaTexture.onResetDevice();
-	planetTexture.onResetDevice();
-	shipTexture.onResetDevice();
 	cactusTexture.onResetDevice();
 
 	banditTexture.onResetDevice();

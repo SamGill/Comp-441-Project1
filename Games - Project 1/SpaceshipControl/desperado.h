@@ -47,14 +47,6 @@ private:
 	TextDX *victory; //Text displayed when player successfully completes game
 	TextDX *gameOver; //Text displayed when player dies
 
-	// game items
-	TextureManager nebulaTexture;   // nebula texture
-	TextureManager planetTexture;   // planet texture
-	TextureManager shipTexture;     // ship texture
-	Image   planet;                 // planet image
-	Image   nebula;                 // nebula image
-	Image   ship;                   // ship image
-
 public:
 	// Constructor
 	Desperado();
