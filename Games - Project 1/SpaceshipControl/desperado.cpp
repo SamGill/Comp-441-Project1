@@ -17,6 +17,8 @@ int banditPlaceCount = 0;
 int score = 0;
 int waveNum = 1;
 int delay = 0;
+bool outOfHearts = false;
+bool outOfGold = false;
 
 void subtractHeart(Image hearts[])
 {
@@ -25,6 +27,8 @@ void subtractHeart(Image hearts[])
 		if (hearts[i].getVisible())
 		{
 			hearts[i].setVisible(false);
+			if (i == 0)
+				outOfHearts = true;
 			return;
 		}
 	}
@@ -37,6 +41,8 @@ void subtractGold(Image gold[])
 		if (gold[i].getVisible())
 		{
 			gold[i].setVisible(false);
+			if (i == 0)
+				outOfGold = true;
 			return;
 		}
 	}
@@ -72,7 +78,7 @@ void Desperado::initialize(HWND hwnd)
 	scoreFont = new TextDX();
 	wave = new TextDX();
 	victory = new TextDX();
-
+	gameOver = new TextDX();
 
 	//Initialize the score text
 	if(scoreFont->initialize(graphics, 32, true, false, "Arial") == false)
@@ -81,10 +87,15 @@ void Desperado::initialize(HWND hwnd)
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing output font"));
 	if(victory->initialize(graphics, 50, true, false, "Broadway") == false)
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing output font"));
+	if(gameOver->initialize(graphics, 50, true, false, "Broadway") == false)
+		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing output font"));
+
+
 
 	scoreFont->setFontColor(graphicsNS::RED);
 	wave->setFontColor(graphicsNS::BLACK);
 	victory->setFontColor(graphicsNS::YELLOW);
+	gameOver->setFontColor(graphicsNS::RED);
 
 #pragma region Built_in_textures 
 	// nebula texture
@@ -198,6 +209,25 @@ void Desperado::initialize(HWND hwnd)
 //=============================================================================
 void Desperado::update()
 {
+	if (outOfGold || outOfHearts)
+	{
+		for(int i = 0; i < MAX_BANDITS; i++)
+		{
+
+			manyBandits[i].chance_to_shoot();
+			//manyBandits[i].setY(manyBandits[i].getY() + frameTime * banditNS::SPEED);
+			manyBandits[i].update(frameTime);
+
+			if (manyBandits[i].getY() > GAME_HEIGHT && manyBandits[i].getVisible())
+			{
+				manyBandits[i].setVisible(false);
+				banditCounter--;
+			}
+
+		}
+		return;
+	}
+
 	banditPlaceCount++;
 
 	int placement;
@@ -267,22 +297,6 @@ void Desperado::update()
 		playerBullet.setY(player.getY());
 	}
 
-	/*if (playerBullet.getVisible()) 
-	playerBullet.setY(playerBullet.getY() - frameTime * BULLET_SPEED);*/
-
-	/*if (playerBullet.getY() < 0)
-	playerBullet.setVisible(false);*/
-
-	/*if(banditCounter % 1000 && !bandit.getVisible())
-	{
-	bandit.setVisible(true);
-	bandit.setY(-100);
-	bandit.setX(placement);
-	}*/
-
-	/*if(bandit.getVisible())
-	bandit.setY(bandit.getY() + frameTime * banditNS::SPEED);*/
-
 	if (banditCounter > 0)
 	{
 		for (int i = 0; i < MAX_BANDITS; i++)
@@ -334,7 +348,7 @@ void Desperado::collisions()
 
 	for (int i = 0; i < MAX_BANDITS; i++)
 	{
-		if (manyBandits[i].collidesWith(playerBullet,collisionVector) && playerBullet.getVisible())
+		if (manyBandits[i].collidesWith(playerBullet,collisionVector) && playerBullet.getVisible() && manyBandits[i].getVisible())
 		{
 			manyBandits[i].setVisible(false);
 			playerBullet.setVisible(false);
@@ -373,12 +387,20 @@ void Desperado::render()
 	std::stringstream victoryDisplay;
 	victoryDisplay << "VICTORY!!!";
 
+	std::stringstream gameOverDisplay;
+	if (outOfGold)
+		gameOverDisplay << "All your gold was stolen!";
+	else if (outOfHearts)
+		gameOverDisplay << "You died!";
+
+	gameOverDisplay << "\n\tGAME OVER";
+
+
 	graphics->spriteBegin();                // begin drawing sprites
 
 	background.draw();
 
 	cactus.draw();
-	player.draw();
 	//bandit.draw();
 
 	for (int i = 0; i < MAX_BANDITS; i++)
@@ -402,6 +424,11 @@ void Desperado::render()
 	{
 		victory->print(victoryDisplay.str(), GAME_WIDTH/2 - 50, GAME_HEIGHT/2 - 50);
 	}
+
+	if (outOfGold || outOfHearts)
+		gameOver->print(gameOverDisplay.str(), GAME_WIDTH/2 - 100, GAME_HEIGHT/2 - 100);
+	else
+		player.draw();
 
 	graphics->spriteEnd();                  // end drawing sprites
 }

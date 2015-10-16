@@ -79,7 +79,7 @@ void Bandit::update(float frameTime)
 void Bandit::chance_to_shoot() 
 {
 
-	if (banditBullet.getVisible() == false)
+	if (banditBullet.getVisible() == false && visible)
 	{
 		random_device rd;   
 		mt19937 gen(rd());  
