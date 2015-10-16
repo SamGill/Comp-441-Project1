@@ -17,6 +17,8 @@ int banditPlaceCount = 0;
 int score = 0;
 int waveNum = 1;
 int delay = 0;
+bool gameOverCond = false;
+bool victoryCond = false;
 
 void subtractHeart(Image hearts[])
 {
@@ -72,19 +74,23 @@ void Desperado::initialize(HWND hwnd)
 	scoreFont = new TextDX();
 	wave = new TextDX();
 	victory = new TextDX();
+	gameOver = new TextDX();
 
 
-	//Initialize the score text
+	//Initialize the game text
 	if(scoreFont->initialize(graphics, 32, true, false, "Arial") == false)
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing output font"));
 	if(wave->initialize(graphics, 32, true, false, "Rockwell Extra Bold") == false)
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing output font"));
 	if(victory->initialize(graphics, 50, true, false, "Broadway") == false)
 		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing output font"));
+	if(gameOver->initialize(graphics, 50, true, false, "Broadway") == false)
+		throw(GameError(gameErrorNS::FATAL_ERROR, "Error initializing output font"));
 
 	scoreFont->setFontColor(graphicsNS::RED);
 	wave->setFontColor(graphicsNS::BLACK);
 	victory->setFontColor(graphicsNS::YELLOW);
+	gameOver->setFontColor(graphicsNS::RED);
 
 #pragma region Built_in_textures 
 	// nebula texture
@@ -298,8 +304,9 @@ void Desperado::update()
 	//Move all the bandits test
 	for(int i = 0; i < MAX_BANDITS; i++)
 	{
-
-		manyBandits[i].chance_to_shoot();
+		//Checks if bandit is visible first
+		if(manyBandits[i].getVisible())
+			manyBandits[i].chance_to_shoot();
 		//manyBandits[i].setY(manyBandits[i].getY() + frameTime * banditNS::SPEED);
 		manyBandits[i].update(frameTime);
 
@@ -334,7 +341,7 @@ void Desperado::collisions()
 
 	for (int i = 0; i < MAX_BANDITS; i++)
 	{
-		if (manyBandits[i].collidesWith(playerBullet,collisionVector) && playerBullet.getVisible())
+		if (manyBandits[i].collidesWith(playerBullet,collisionVector) && playerBullet.getVisible() && manyBandits[i].getVisible())
 		{
 			manyBandits[i].setVisible(false);
 			playerBullet.setVisible(false);
@@ -350,7 +357,20 @@ void Desperado::collisions()
 		}
 	}
 
+	//Checks for game over condition
+	if(gameOverCond)
+	{
+		Sleep(5000);
+		exitGame();
+	}
 
+	//Checks for victory condition
+	if(victoryCond)
+	{
+		Sleep(1000);
+		if(input->anyKeyPressed())
+			exitGame();
+	}
 }
 
 //=============================================================================
@@ -372,6 +392,10 @@ void Desperado::render()
 	//Victory text
 	std::stringstream victoryDisplay;
 	victoryDisplay << "VICTORY!!!";
+
+	//Game over text
+	std::stringstream gameOverDisplay;
+	gameOverDisplay << "GAME OVER";
 
 	graphics->spriteBegin();                // begin drawing sprites
 
@@ -401,6 +425,14 @@ void Desperado::render()
 		&& !manyBandits[2].getVisible() && !manyBandits[3].getVisible() && !manyBandits[4].getVisible())
 	{
 		victory->print(victoryDisplay.str(), GAME_WIDTH/2 - 50, GAME_HEIGHT/2 - 50);
+		victoryCond = true;
+	}
+
+	//Game over condition
+	if(!hearts[0].getVisible())
+	{
+		gameOver->print(gameOverDisplay.str(), GAME_WIDTH/2 - 50, GAME_HEIGHT/2 - 50);
+		gameOverCond = true;
 	}
 
 	graphics->spriteEnd();                  // end drawing sprites

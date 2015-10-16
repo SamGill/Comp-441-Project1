@@ -4,6 +4,7 @@
 // Chapter 5 game.cpp v1.0
 
 #include "game.h"
+#include "audio.h"
 
 // The primary class should inherit from Game class
 
