@@ -4,15 +4,19 @@
 // Chapter 6 ship.cpp v1.0
 
 #include "bandit.h"
+#include "desperado.h"
 #include <random>
 using std::random_device;
 using std::mt19937;
 using std::uniform_int_distribution;
+
+
 //=============================================================================
 // default constructor
 //=============================================================================
 Bandit::Bandit() : Entity()
 {
+	banditSpeed = 60;
 	spriteData.width = banditNS::WIDTH;           // size of Ship1
 	spriteData.height = banditNS::HEIGHT;
 	spriteData.x = banditNS::X;                   // location on screen
@@ -68,11 +72,11 @@ void Bandit::update(float frameTime)
 	//spriteData.angle += frameTime * banditNS::ROTATION_RATE;  // rotate the ship
 	//spriteData.x += frameTime * velocity.x;         // move ship along X 
 
-	spriteData.y += frameTime * banditNS::SPEED;         // move ship along Y
-	
+	//spriteData.y += frameTime * banditNS::SPEED;         // move ship along Y
+	spriteData.y += frameTime * banditSpeed;
 
 	banditBullet.banditUpdate(frameTime);
-
+	
 }
 
 
@@ -89,7 +93,6 @@ void Bandit::chance_to_shoot()
 		if (dist(gen) < 10)
 		{
 			banditBullet.setVisible(true);
-
 
 			banditBullet.setY(spriteData.y + banditNS::HEIGHT/2);
 			//0 means left, else right
@@ -110,6 +113,11 @@ void Bandit::removeBullet()
 {
 	banditBullet.setVisible(false);
 	banditBullet.setY(0);
+}
+
+void Bandit::setSpeed(float newSpeed)
+{
+	banditSpeed = newSpeed;
 }
 
 //=============================================================================

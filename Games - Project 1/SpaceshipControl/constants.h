@@ -31,6 +31,7 @@ const char NEBULA_IMAGE[] = "pictures\\orion.jpg";  // photo source NASA/courtes
 const char PLANET_IMAGE[] = "pictures\\planet.png"; // picture of planet
 const char SHIP_IMAGE[]   = "pictures\\ship.png";   // spaceship
 const char CACTUS_IMAGE[] = "pictures\\cactus.png";
+const char INFO_IMAGE[] = "pictures\\Info.png";
 
 const char BANDIT_IMAGE[]     = "pictures\\bandit.png";
 const char BACKGROUND_IMAGE[] = "pictures\\background.png";
@@ -68,7 +69,7 @@ const float	BULLET_SPEED = 750.0f;
 const int   HEART_NUMBER = 5;
 const int   GOLD_NUMBER  = 3;
 const int	BANDIT_SPEED = 60;
-const int   MAX_BANDITS  = 5;
+const int   MAX_BANDITS  = 7;
 
 const int waveDelay = 200;
 
@@ -111,5 +112,7 @@ const char HIT[]   = "hit";
 const char GUNSHOT[] = "gunshot";
 const char VICTORY[] = "winVictory";
 const char FAILURE[] = "loseGame";
+const char OUCH[] = "ouch";
+const char STOLEN[] = "goldStolen";
 
 #endif

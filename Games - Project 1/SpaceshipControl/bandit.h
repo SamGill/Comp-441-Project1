@@ -41,6 +41,7 @@ class Bandit : public Entity
 {
 private:
 	Bullet banditBullet;
+	float banditSpeed;
 public:
     // constructor
     Bandit();
@@ -55,6 +56,7 @@ public:
 	Bullet getBullet();
 	void removeBullet();
     //void damage(WEAPON);
+	void setSpeed(float newSpeed);
 };
 
 #endif

@@ -31,12 +31,14 @@ private:
 	TextureManager goldTexture;
 	TextureManager heartTexture;
 	TextureManager playerTexture;
+	TextureManager infoTexture;
 
 	Image cactus;					// cactus image
 	Bandit bandit;
 	Bandit manyBandits[MAX_BANDITS];
 	Bullet banditBullets[MAX_BANDITS];
 	Image background;
+	Image info;
 	Bullet playerBullet;
 	Player player;
 
@@ -47,6 +49,7 @@ private:
 	TextDX *wave; //Text used to display current wave
 	TextDX *victory; //Text displayed when player successfully completes game
 	TextDX *gameOver; //Text displayed when player dies
+	TextDX *enemySpeed; //Text that shows enemy speed ratio
 
 public:
 	// Constructor
@@ -63,6 +66,7 @@ public:
 	void render();      // "
 	void releaseAll();
 	void resetAll();
+	int waveNum;
 };
 
 #endif
