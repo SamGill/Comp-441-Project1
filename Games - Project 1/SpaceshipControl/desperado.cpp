@@ -426,6 +426,7 @@ void Desperado::collisions()
 			manyBandits[i].removeBullet();
 
 			subtractHeart(hearts);
+			score -= 5;
 
 			audio->playCue(OUCH);
 		}
@@ -497,7 +498,8 @@ void Desperado::render()
 	enemySpeed->print(banditSpeedDisplay.str(), GAME_WIDTH - 175, 80);
 
 	if(waveNum == 5 && !manyBandits[0].getVisible() && !manyBandits[1].getVisible()
-		&& !manyBandits[2].getVisible() && !manyBandits[3].getVisible() && !manyBandits[4].getVisible())
+		&& !manyBandits[2].getVisible() && !manyBandits[3].getVisible() && !manyBandits[4].getVisible() && !manyBandits[5].getVisible()
+		&& !manyBandits[6].getVisible())
 	{
 		victory->print(victoryDisplay.str(), GAME_WIDTH/2 - 50, GAME_HEIGHT/2 - 50);
 		victoryCond = true;
